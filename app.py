@@ -24,6 +24,7 @@ postgresql_pool = psycopg2.pool.SimpleConnectionPool(
     user="postgres",
     password="db_password123###",
     port=5432
+    sslmode="require" 
 )
 
 # ... [Keep all other Flask-Login and user management code identical] ...
