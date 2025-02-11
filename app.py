@@ -11,11 +11,15 @@ from openpyxl import Workbook
 from io import BytesIO
 import psycopg2
 from psycopg2 import pool
+import os
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
 
-# Configure PostgreSQL connection pool
+# Get absolute path to the CA certificate
+ca_cert_path = os.path.join(os.path.dirname(__file__), 'certs', 'global-bundle.pem')
+
+# Configure PostgreSQL connection pool with SSL verification
 postgresql_pool = psycopg2.pool.SimpleConnectionPool(
     minconn=1,
     maxconn=10,
@@ -24,9 +28,9 @@ postgresql_pool = psycopg2.pool.SimpleConnectionPool(
     user="postgres",
     password="db_password123###",
     port=5432,
-    sslmode="require" 
+    sslmode="verify-ca",
+    sslrootcert=ca_cert_path
 )
-
 # ... [Keep all other Flask-Login and user management code identical] ...
 logging.basicConfig(level=logging.DEBUG)
 
