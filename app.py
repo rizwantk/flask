@@ -23,7 +23,7 @@ postgresql_pool = psycopg2.pool.SimpleConnectionPool(
     database="tender",
     user="postgres",
     password="db_password123###",
-    port=5432
+    port=5432,
     sslmode="require" 
 )
 
