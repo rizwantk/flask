@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICS Tenders Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2A2A72;
+            --secondary-color: #009FFD;
+            --accent-color: #FF0076;
+        }
+
+        body {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .particle-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .portal-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .portal-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1rem;
+            min-height: 200px;
+            transition: transform 0.3s ease;
+        }
+
+        .stats-card:hover {
+            transform: scale(1.03);
+        }
+
+        .rfp-badge {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 25px;
+        }
+
+        .animated-card {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .total-rfp-card {
+            background: linear-gradient(135deg, #2A2A72, #009FFD);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .total-rfp-number {
+            font-size: 4rem;
+            font-weight: 700;
+            margin: 1rem 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .total-rfp-label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            letter-spacing: 1px;
+        }
+
+        .interactive-card {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .interactive-card:before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .interactive-card:hover:before {
+            animation: shine 1.5s;
+        }
+
+        @keyframes shine {
+            0% { left: -50%; }
+            100% { left: 150%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="particle-background"></div>
+
+    <nav class="navbar navbar-expand-lg fixed-top bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand text-primary fw-bold" href="#">
+                <i class="fas fa-file-contract me-2"></i>ICS tenders portal
+            </a>
+            <div class="d-flex align-items-center">
+                <a href="{{ url_for('landing') }}" class="btn btn-primary me-3">Dashboard</a>
+                <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">Profile</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container" style="margin-top: 80px;">
+        <div class="portal-card p-4">
+            <h1 class="text-center mb-4 display-4 fw-bold text-gradient">Tenders Assistant Portal</h1>
+            
+            <!-- Total RFPs Card at the Top -->
+            <div class="row justify-content-center mb-4">
+                <div class="col-md-8">
+                    <div class="total-rfp-card interactive-card animated-card">
+                        <div class="total-rfp-label">TOTAL RFPs</div>
+                        <div class="total-rfp-number">{{ total_rfp_count }}</div>
+                        <div class="rfp-badge mt-2">SAR {{ total_rfp_value|millify }} Total Value</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Open and Closed RFPs Cards at the Bottom -->
+            <div class="row">
+                <!-- Open RFPs Card on the Left -->
+                <div class="col-md-6 mb-4">
+                    <a href="{{ url_for('open_rfps') }}" class="text-decoration-none">
+                        <div class="stats-card interactive-card">
+                            <h4><i class="fas fa-folder-open me-2"></i>Open RFPs</h4>
+                            <h2 class="display-3 fw-bold mt-3">{{ open_rfp_count }}</h2>
+                            <div class="rfp-badge mt-3">SAR {{ open_rfp_value|millify }}</div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Closed RFPs Card on the Right -->
+                <div class="col-md-6 mb-4">
+                    <a href="{{ url_for('closed_rfps') }}" class="text-decoration-none">
+                        <div class="stats-card interactive-card">
+                            <h4><i class="fas fa-archive me-2"></i>Closed RFPs</h4>
+                            <h2 class="display-3 fw-bold mt-3">{{ closed_rfp_count }}</h2>
+                            <div class="rfp-badge mt-3">SAR {{ closed_rfp_value|millify }}</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add particle background effect
+        function createParticles() {
+            const container = document.querySelector('.particle-background');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'absolute';
+                particle.style.width = '2px';
+                particle.style.height = '2px';
+                particle.style.background = 'rgba(255,255,255,0.5)';
+                particle.style.borderRadius = '50%';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${5 + Math.random() * 10}s infinite`;
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+    </script>
+</body>
+</html>
